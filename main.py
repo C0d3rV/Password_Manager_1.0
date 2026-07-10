@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import messagebox
 import random
 import pyperclip
+import json
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
 
 
@@ -30,16 +31,35 @@ def save(*args):
     site = web_entry.get()
     mail = email_entry.get()
     passw = password_entry.get()
+    new_data = {
+        site: {
+            "email": mail,
+            "password": passw
+        }
+    }
 
     if (len(site) == 0)  or (len(mail)==0) or (len(passw)==0):
         messagebox.showerror(title="Error!", message="Please enter a valid data")
     else:
-        confirmation = messagebox.askyesno(title="Confirm", message=f"Do you want to save {passw} for {site}")
-        if confirmation:
-            with open("saved_passwords.txt", "a") as file:
-                file.write(f"{site} | {mail} | {passw}\n")
-                web_entry.delete(0, END)
-                password_entry.delete(0, END)
+        try:
+            with open("saved_passwords.json", "r") as file:
+
+                #reading the json file
+                data = json.load(file)
+        except (FileNotFoundError, json.JSONDecodeError):
+            with open("saved_passwords.json", "w") as file:
+                json.dump({}, file, indent=4)
+        else:
+            #updating the json file with new data
+            data.update(new_data)
+        
+        with open("saved_passwords.json", "w") as file:
+
+            #writing the updated data back to the json file
+            json.dump(data, file, indent=4)
+
+            web_entry.delete(0, END)
+            password_entry.delete(0, END)
 # ---------------------------- UI SETUP ------------------------------- #
 window = Tk()
 window.title("Password Manager")
