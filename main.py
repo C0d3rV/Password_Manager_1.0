@@ -54,12 +54,31 @@ def save(*args):
         data.update(new_data)
         
         with open("saved_passwords.json", "w") as file:
-            
+
             #writing the updated data back to the json file
             json.dump(data, file, indent=4)
 
             web_entry.delete(0, END)
             password_entry.delete(0, END)
+
+# ---------------------------- SEARCH PASSWORD ------------------------------- #
+
+
+def search():
+    site = web_entry.get()
+    try:
+        with open("saved_passwords.json", "r") as file:
+            data = json.load(file)
+        if site in data:
+            email = data[site]["email"]
+            password = data[site]["password"]
+            messagebox.showinfo(title=site, message=f"Email: {email}\nPassword: {password}")
+        else:
+            messagebox.showerror(title="Error!", message="No data found for this website. \n Please check the name for capitazlation and spelling.")
+    except (FileNotFoundError, json.JSONDecodeError):
+        messagebox.showerror(title="Error!", message="No data found for this website.")
+
+
 # ---------------------------- UI SETUP ------------------------------- #
 window = Tk()
 window.title("Password Manager")
@@ -73,8 +92,10 @@ canvas.grid(row=0, column=1)
 website = Label(text="Website:", bg="white", highlightthickness=0)
 web_entry = Entry(width=35)
 website.grid(row=1, column=0)
-web_entry.grid(row=1, column=1, columnspan=2)
+web_entry.grid(row=1, column=1, columnspan=2, sticky = "nsew")
 web_entry.focus()
+search = Button(text="Search", width=12, bg="white", fg="black", command=search)
+search.grid(row=1, column=3, sticky = "nsew")
 
 email = Label(text="Email/Username:", bg="white", highlightthickness=0)
 email_entry = Entry(width=35)
