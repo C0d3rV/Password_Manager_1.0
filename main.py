@@ -40,21 +40,21 @@ def save(*args):
 
     if (len(site) == 0)  or (len(mail)==0) or (len(passw)==0):
         messagebox.showerror(title="Error!", message="Please enter a valid data")
+
     else:
         try:
             with open("saved_passwords.json", "r") as file:
-
                 #reading the json file
                 data = json.load(file)
+
         except (FileNotFoundError, json.JSONDecodeError):
-            with open("saved_passwords.json", "w") as file:
-                json.dump({}, file, indent=4)
-        else:
-            #updating the json file with new data
-            data.update(new_data)
+            data = {}
+
+        #updating the json file with new data
+        data.update(new_data)
         
         with open("saved_passwords.json", "w") as file:
-
+            
             #writing the updated data back to the json file
             json.dump(data, file, indent=4)
 
